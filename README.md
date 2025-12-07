@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MagicSend 🚀
+
+LocalSend-like secure P2P file transfer application for the web.
+Built with Next.js 14, TypeScript, ShadCN/UI, and Socket.io.
+
+## Features
+
+- **Local Discovery**: Automatically find devices on the same network (served by same node server).
+- **P2P Transfer**: WebRTC-based file transfer. Files go directly device-to-device.
+- **Secure**: No files stored on server.
+- **Cross-Platform**: Works on any device with a browser.
+- **PWA Support**: Installable as an app.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **UI**: TailwindCSS + ShadCN/UI + Framer Motion
+- **State**: Zustand
+- **Signaling**: Custom Node.js Server + Socket.io
+- **P2P**: WebRTC (Simple-Peer)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- NPM
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the App (Development)
+
+This project uses a custom server for Socket.io. You must run the custom dev script:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> This runs `ts-node server.ts`.
+> Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Since this app relies on a custom Node.js server for WebSocket signaling, **you cannot deploy to Vercel standardly** (which is Serverless).
+You must use a platform that supports Node.js servers, such as:
+- **Render** (Web Service)
+- **Railway**
+- **DigitalOcean App Platform**
+- **VPS** (Docker/PM2)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```

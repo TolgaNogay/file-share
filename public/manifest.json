@@ -1,0 +1,21 @@
+{
+    "name": "MagicSend",
+    "short_name": "MagicSend",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#277964",
+    "theme_color": "#277964",
+    "description": "Secure Local P2P File Transfer",
+    "icons": [
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
