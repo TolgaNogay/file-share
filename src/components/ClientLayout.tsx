@@ -44,6 +44,8 @@ export default function ClientLayout({
 
             // Announce self
             socket.emit("announce", myDevice);
+            // Request existing peers
+            socket.emit("request-peers");
         }
 
         function onDisconnect() {
@@ -57,13 +59,22 @@ export default function ClientLayout({
             addPeer(peerDevice);
         }
 
-        // We need server to implement 'announce' broadcast. 
-        // Currently server.ts only has 'join-room' and 'signal'. we should update server.ts later to support global discovery if we want /devices to work globally or use a 'reset' room.
-        // For now let's assume we join a global 'lobby' for discovery.
+        function onPeerRequest(requesterSocketId: string) {
+            // Someone is asking for our device info
+            socket.emit("peer-response", requesterSocketId, myDevice);
+        }
+
+        function onPeerLeft(socketId: string) {
+            console.log("Peer left:", socketId);
+            // Note: We'd need to track socketId -> deviceId mapping for proper removal
+            // For now, peers will just stay in list until refresh
+        }
 
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("peer-announce", onPeerAnnounce);
+        socket.on("peer-request", onPeerRequest);
+        socket.on("peer-left", onPeerLeft);
 
         // Initial connection might happen before listener
         if (socket.connected) onConnect();
@@ -72,6 +83,8 @@ export default function ClientLayout({
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("peer-announce", onPeerAnnounce);
+            socket.off("peer-request", onPeerRequest);
+            socket.off("peer-left", onPeerLeft);
             // disconnectSocket(); // Keep persistent? usually yes.
         };
     }, [setMyDevice, setConnected, addPeer]);
